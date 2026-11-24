@@ -1,0 +1,109 @@
+# @jgb-solutions/admin
+
+The admin panel kit for JGB Solutions apps: a React shell, data blocks, forms and SVG charts, styled once, accessible (WCAG 2.1 AA), phone-ready, light and dark. Each app builds its own pages from it. MIT.
+
+**Status: 0.x, being built.** This version has the tokens, the shell and the buttons. Data blocks, forms and actions, and charts follow, each in its own pull request.
+
+## What it is, and what it isn't
+
+- **In:** the shell, navigation, data blocks, forms, actions and charts every admin needs.
+- **Not in:** any app's pages, data, roles or rules. Components take data and callbacks; the app fetches, checks permissions on the server, and decides what happens. No business logic, secrets, app IDs or infrastructure details.
+
+The look, "Bento + Daylight's details" (2026-11-24): rounded tiles of different sizes on a tinted canvas, a dark hero tile, a floating dark sidebar and a floating dock on phones, with a labelled sidebar, real table headers, an inline role picker and an activity feed.
+
+## Use
+
+```sh
+bun add @jgb-solutions/admin
+```
+
+React 19 is a peer dependency. Import the stylesheet once, and load the two fonts (or let the fallbacks stand in):
+
+```tsx
+import '@jgb-solutions/admin/styles.css'
+import { AdminShell, PageHeader, Button, TopSearch, ThemeToggle, icons } from '@jgb-solutions/admin'
+// Fonts: Bricolage Grotesque (700, 800) and Figtree (400, 500, 600), from Google Fonts or self-hosted.
+
+export function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AdminShell
+      app={{ name: 'Example', mark: 'E' }}
+      brand="#6b4ce6"
+      nav={[
+        {
+          label: 'Manage',
+          items: [
+            { key: 'overview', label: 'Overview', href: '/admin', icon: <icons.home />, current: true },
+            { key: 'users', label: 'Users', href: '/admin/users', icon: <icons.users />, count: 2481 },
+          ],
+        },
+        { placement: 'end', items: [{ key: 'settings', label: 'Settings', href: '/admin/settings', icon: <icons.gear /> }] },
+      ]}
+      user={{ name: 'Maya Reyes', role: 'Admin' }}
+      // With a router, render its own link: renderLink={({ item, children, ...rest }) => <Link to={item.href} {...rest}>{children}</Link>}
+    >
+      {children}
+    </AdminShell>
+  )
+}
+```
+
+Every class is prefixed `ja-` and every token lives on `.ja-root` (AdminShell's element): the admin never restyles the rest of the app.
+
+## Components
+
+### Shell
+
+- `AdminShell`: the frame. Desktop: the floating dark sidebar. At 760 px and below: a top bar (the app's mark, the theme switch, `mobileActions`) and the floating dock. Holds the theme and the app's brand colour.
+  - `brand`: a hex colour. Text on it (buttons, the current page) is white or ink, whichever reads better (`inkOn`).
+  - `nav`: sections of items (`key`, `label`, `href`, `icon`, optional `count`, `current`). Sections with `placement: 'end'` sit at the bottom.
+  - `dockItems`: the keys the phone's dock shows (at most 5; default the first 5).
+  - `renderLink`: renders a link with the app's router. Default `<a href>`.
+  - Theme: light, dark or the system's (default). Remembered in this browser, or controlled with `theme` and `onThemeChange` (e.g. kept in a cookie so the server renders it). Server rendering shows `defaultTheme` ("system": the CSS follows the system's dark mode with no script).
+- `Sidebar`: collapses to an icon rail, remembered per browser. In the rail, labels become tooltips and stay the links' names; counts over 99 show as "99+".
+- `Dock`: up to 5 items, icon over label.
+- `PageHeader`: the page's one h1, a line of context, desktop-only `tools` (search, theme, notifications) and `actions` (one primary).
+- `TopSearch`, `ThemeToggle`, `useAdminTheme()`.
+
+### Basics
+
+- `Button` (`primary`, `quiet`, `danger`; `small`), `IconButton` (always named by `label`; optional `dot`).
+- `Avatar`: a picture or initials, with a colour pair kept per name.
+- `icons`: a small line-icon set (24×24, `currentColor`). Any other icon works as a ReactNode.
+
+## Design tokens
+
+CSS custom properties on `.ja-root`, light by default, dark with `data-theme="dark"` or the system's dark mode. Apps set `--brand` (AdminShell's `brand`); the rest are the kit's.
+
+| Token                         | Light                             | Dark                              | Use                                                                  |
+| ----------------------------- | --------------------------------- | --------------------------------- | -------------------------------------------------------------------- |
+| `--brand`                     | the app's (example `#6b4ce6`)     | same                              | current page, primary buttons, meters, links                         |
+| `--brand-ink`                 | white or ink, picked for contrast | same                              | text on `--brand`                                                    |
+| `--sun` / `--sun-ink`         | `#ffc84a` / `#4a3500`             | same                              | the kit's highlight: the hero chart line, one highlight tile, badges |
+| `--canvas`                    | `#eceaf6`                         | `#121022`                         | page background                                                      |
+| `--tile` / `--tile-sunk`      | `#ffffff` / `#f6f5fb`             | `#1c1930` / `#24203a`             | tiles, inputs; rows and fields inside tiles                          |
+| `--night`                     | `#1f1b33`                         | `#0d0b18`                         | sidebar, hero tile, dock, toasts                                     |
+| `--ink` / `--muted`           | `#1c1930` / `#6b6785`             | `#f1effa` / `#a39fbf`             | text, secondary text                                                 |
+| `--line`                      | `#e4e1f0`                         | `#2e2a47`                         | control borders                                                      |
+| `--good` / `--warn` / `--bad` | `#158150` / `#946200` / `#b42318` | `#4cc38a` / `#f0b429` / `#ff7a6b` | status: active, invited, suspended; deltas                           |
+
+Every text pair meets WCAG AA; `src/contrast.test.ts` checks them, and the E2E tests run axe in light and dark. Two values differ slightly from the approved mockup for that reason: `--muted` (`#6d6987` was 4.39:1 on the canvas) and `--good` (`#18915a` was 3.7:1 on rows).
+
+Type: Bricolage Grotesque (700/800) for titles and numbers (`tabular-nums`), Figtree (400/500/600) for the rest. Sentence case everywhere. Shape: tiles 24 px (20 on phones), controls 12 px, pills. Motion only in answer to an action, and none with `prefers-reduced-motion`.
+
+## Develop
+
+```sh
+bun install
+bun run playground      # every component with sample data, http://127.0.0.1:4400
+bun run test            # unit tests (contrast, avatars…)
+bun run test:e2e        # axe (light and dark), phone width, behaviour, against the playground
+bun run screenshots     # desktop and phone screenshots into .screenshots/
+bun run build && bun run check:package
+```
+
+## Publishing
+
+Releases come from GitHub, with provenance: GitHub Actions publishes (`.github/workflows/publish.yml`) when a GitHub release is published for the tag `vX.Y.Z` matching `package.json`'s version, after the run is approved in the `npm` environment. It uses npm's trusted publishing (OIDC): no npm token is stored anywhere. A stable version moves the `latest` tag; a prerelease (`0.2.0-beta.1`) goes to `next`. The first version is published by hand, because npm only lets a trusted publisher be set up on a package that already exists.
+
+Versions follow semver. Until 1.0, a minor version may change components' props; the changelog says how.
