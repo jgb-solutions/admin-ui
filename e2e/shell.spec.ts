@@ -54,6 +54,22 @@ test('phone: the dock and the top bar replace the sidebar', async ({ page, isMob
   await expect(page.getByRole('button', { name: 'Notifications' })).toBeVisible()
 })
 
+test('phone: the end of a long page and every focused control scroll clear of the dock', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'phones only')
+  await open(page, 'light')
+  const dockTop = async () => (await page.locator('.ja-dock').boundingBox())?.y ?? 0
+  const last = page.locator('.ja-main').locator('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])').last()
+  // Scrolled to the very end, the page's last control sits above the dock.
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+  const end = await last.boundingBox()
+  expect((end?.y ?? 0) + (end?.height ?? 0)).toBeLessThanOrEqual(await dockTop())
+  // Reached from the keyboard (from the top), it is scrolled into view above the dock, not under it.
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await last.focus()
+  const focused = await last.boundingBox()
+  expect((focused?.y ?? 0) + (focused?.height ?? 0)).toBeLessThanOrEqual(await dockTop())
+})
+
 test('the theme switch changes the theme and is remembered', async ({ page }) => {
   await open(page, 'light')
   const root = page.locator('.ja-root')

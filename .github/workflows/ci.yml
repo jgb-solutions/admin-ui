@@ -22,10 +22,11 @@ jobs:
       - run: bun ci
       - run: bun audit --audit-level=high
       - run: bun run format:check
+      # The published files first: scripts/check-package.ts imports dist/ and is type checked with the rest.
+      - run: bun run build
       - run: bun run typecheck
       - run: bun run test
-      # The published files: built, loadable, scoped CSS, and free of anything app-specific (scripts/check-package.ts).
-      - run: bun run build
+      # The built files: loadable, scoped CSS, and free of anything app-specific (scripts/check-package.ts).
       - run: bun run check:package
       # The components in a real browser: axe (WCAG 2.1 AA) in light and dark, desktop and phone.
       - run: bunx playwright install --with-deps chromium
