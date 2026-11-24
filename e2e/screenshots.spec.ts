@@ -29,9 +29,19 @@ for (const theme of ['light', 'dark'] as const) {
       await page.screenshot({ path: `${DIR}/overview-loading-${label}-${theme}.png`, fullPage: !mobile })
       await open(page, theme, '?state=empty#users')
       await page.screenshot({ path: `${DIR}/users-empty-${label}-${theme}.png`, fullPage: !mobile })
+      await open(page, theme, '#analytics')
+      await page.screenshot({ path: `${DIR}/analytics-${label}-${theme}.png`, fullPage: !mobile })
+      await page.getByRole('img', { name: /^Thu: This week 66/ }).focus()
+      await page.getByRole('img', { name: /^Thu: This week 66/ }).scrollIntoViewIfNeeded()
+      await page.screenshot({ path: `${DIR}/analytics-value-${label}-${theme}.png` })
       await open(page, theme, '#settings')
       await page.getByLabel('Site name').fill('')
       await page.screenshot({ path: `${DIR}/settings-${label}-${theme}.png`, fullPage: !mobile })
+      if (mobile) {
+        // The page's end, scrolled clear of the dock.
+        await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+        await page.screenshot({ path: `${DIR}/settings-end-${label}-${theme}.png` })
+      }
       await open(page, theme, '#users')
       await page.getByRole('combobox', { name: 'Role for Ada Okafor' }).selectOption('Editor')
       await page.locator('.ja-toast').waitFor()

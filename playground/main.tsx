@@ -6,6 +6,7 @@ import {
   Avatar,
   AvatarStack,
   BanControl,
+  BarChart,
   Bento,
   Button,
   Checkbox,
@@ -14,6 +15,7 @@ import {
   HeroChartTile,
   IconButton,
   icons,
+  LineChart,
   Meter,
   PageHeader,
   Pagination,
@@ -284,6 +286,58 @@ function Overview() {
   )
 }
 
+function Analytics() {
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  return (
+    <Bento aria-label="Analytics">
+      <Tile span={7} title="Sign-ups per day">
+        <BarChart
+          labels={days}
+          series={[
+            { label: 'This week', values: [38, 52, 41, 66, 58, 31, 30] },
+            { label: 'Last week', values: [29, 44, 47, 50, 41, 22, 27] },
+          ]}
+          label="Sign-ups per day, this week and last"
+        />
+      </Tile>
+      <StatTile
+        span={5}
+        label="Sign-ups this week"
+        value="316"
+        delta={{ value: '+22%', direction: 'up', label: 'on last week' }}
+        note="Busiest day: Thursday"
+      />
+      <Tile span={5} title="Reports opened">
+        <BarChart
+          labels={['Spam', 'Abuse', 'Copyright', 'Other']}
+          series={[{ label: 'This month', values: [14, 5, 3, 7] }]}
+          label="Reports opened this month, by reason"
+          height={150}
+        />
+      </Tile>
+      <Tile span={7} title="Pages published per week">
+        <LineChart
+          color="brand"
+          data={[
+            { label: 'W1', value: 61 },
+            { label: 'W2', value: 72 },
+            { label: 'W3', value: 68 },
+            { label: 'W4', value: 94 },
+          ]}
+          label="Pages published per week this month"
+        />
+      </Tile>
+    </Bento>
+  )
+}
+
+/** Each page's header. */
+const HEADERS: Partial<Record<Page, [string, string]>> = {
+  users: ['Users', 'Everyone with an account.'],
+  settings: ['Settings', 'How Tidepool works for everyone.'],
+  analytics: ['Analytics', 'How Tidepool is doing, week by week.'],
+}
+
 function Settings() {
   const toast = useToast()
   const [name, setName] = useState('Tidepool')
@@ -341,14 +395,8 @@ function Playground() {
       mobileActions={<IconButton label="Notifications" icon={<icons.bell />} dot />}
     >
       <PageHeader
-        title={page === 'users' ? 'Users' : page === 'settings' ? 'Settings' : "Hi Maya, it's a good week."}
-        description={
-          page === 'users'
-            ? 'Everyone with an account.'
-            : page === 'settings'
-              ? 'How Tidepool works for everyone.'
-              : 'Tidepool at a glance.'
-        }
+        title={HEADERS[page]?.[0] ?? "Hi Maya, it's a good week."}
+        description={HEADERS[page]?.[1] ?? 'Tidepool at a glance.'}
         tools={
           <>
             <TopSearch label="Search anything" />
@@ -364,6 +412,8 @@ function Playground() {
         </Bento>
       ) : page === 'settings' ? (
         <Settings />
+      ) : page === 'analytics' ? (
+        <Analytics />
       ) : (
         <Overview />
       )}

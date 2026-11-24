@@ -29,3 +29,4 @@ export { Field, TextInput, TextArea, Select, Checkbox, Switch, type FieldProps, 
 export { ConfirmDialog, type ConfirmDialogProps } from './forms/ConfirmDialog'
 export { useToast } from './forms/Toast'
 export { RolePicker, BanControl, type RolePickerProps, type RoleOption, type BanControlProps } from './forms/People'
+export { BarChart, type BarChartProps, type BarSeries } from './blocks/BarChart'

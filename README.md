@@ -2,7 +2,7 @@
 
 The admin panel kit for JGB Solutions apps: a React shell, data blocks, forms and SVG charts, styled once, accessible (WCAG 2.1 AA), phone-ready, light and dark. Each app builds its own pages from it. MIT.
 
-**Status: 0.x, being built.** So far: the tokens, the shell, the buttons, the data blocks, and forms and actions. The bar chart follows in its own pull request.
+**Status: 0.1.0, the first version:** the tokens, the shell, data blocks, forms and actions, and charts.
 
 ## What it is, and what it isn't
 
@@ -82,6 +82,12 @@ Every class is prefixed `ja-` and every token lives on `.ja-root` (AdminShell's 
 - `useToast()`: `toast.done('Suspended Leo Martin.')` (gone after 4 s) and `toast.error(…)` (stays until dismissed); above the dock on phones.
 - `RolePicker`: an inline role select for a table row; roles listed in `confirm` ask first ("Make Ada Okafor an Admin?").
 - `BanControl`: suspend with an optional reason, after a confirmation, or restore.
+
+### Charts (SVG, no chart library)
+
+- `LineChart`: one series, a fading fill, the last point marked, labels underneath (`color="sun" | "brand"`).
+- `BarChart`: one series, or two (this period and the last, with a legend).
+- Both stretch to their tile, take an accessible `label`, and add a table of the values for screen readers.
 
 ### Basics
 

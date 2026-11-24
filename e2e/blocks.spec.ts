@@ -55,3 +55,48 @@ test('phone: tiles stack in two columns and table rows become cards', async ({ p
   expect(Math.abs(status!.y - person!.y)).toBeLessThan(24)
   expect(status!.x).toBeGreaterThan(person!.x)
 })
+
+for (const theme of ['light', 'dark'] as const) {
+  test(`charts are accessible, each with a table of its values (${theme})`, async ({ page }) => {
+    await open(page, theme, '#analytics')
+    await expectAccessible(page)
+    await expectFitsScreen(page)
+    const bars = page.getByRole('table', { name: 'Sign-ups per day, this week and last' })
+    await expect(bars.getByRole('columnheader')).toHaveText(['This week', 'Last week'])
+    await expect(bars.getByRole('row', { name: /Thu/ })).toContainText('66')
+    await expect(page.getByRole('img', { name: 'Reports opened this month, by reason' }).locator('rect')).toHaveCount(4)
+  })
+}
+
+test('chart values show on hover and from the keyboard, one tab stop per chart', async ({ page, isMobile }) => {
+  await open(page, 'light', '#analytics')
+  const signups = page.locator('.ja-chart').filter({ has: page.getByRole('table', { name: 'Sign-ups per day, this week and last' }) })
+  const tip = signups.locator('.ja-chart-tip')
+  await expect(tip).toBeHidden()
+  // Tab reaches the chart once, on its last group; the arrows move from there.
+  const points = signups.getByRole('img', { name: /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun):/ })
+  await expect(points).toHaveCount(7)
+  await expect(signups.locator('[tabindex="0"]')).toHaveCount(1)
+  await signups.getByRole('img', { name: 'Sun: This week 30, Last week 27' }).focus()
+  await expect(tip).toHaveText(/Sun\s*30\s*27/)
+  await page.keyboard.press('Home')
+  await expect(signups.getByRole('img', { name: 'Mon: This week 38, Last week 29' })).toBeFocused()
+  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('ArrowRight')
+  await expect(tip).toHaveText(/Thu\s*66\s*50/)
+  // The tooltip stays inside the tile.
+  const tile = await signups.boundingBox()
+  const box = await tip.boundingBox()
+  expect(box!.x).toBeGreaterThanOrEqual(tile!.x - 1)
+  expect(box!.x + box!.width).toBeLessThanOrEqual(tile!.x + tile!.width + 1)
+  await expectAccessible(page)
+  // The line chart too, by pointer on desktop.
+  if (!isMobile) {
+    const line = page.locator('.ja-chart').filter({ has: page.getByRole('table', { name: 'Pages published per week this month' }) })
+    await line.getByRole('img', { name: 'W2: 72' }).hover()
+    await expect(line.locator('.ja-chart-tip')).toHaveText(/W2\s*72/)
+    await page.mouse.move(0, 0)
+    await expect(line.locator('.ja-chart-tip')).toBeHidden()
+  }
+})
