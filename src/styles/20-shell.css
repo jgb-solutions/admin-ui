@@ -187,11 +187,11 @@
 }
 
 /* In dark mode the panels sit on a dark canvas: a faint edge keeps them apart. */
-.ja-root[data-theme='dark'] :is(.ja-sidebar, .ja-dock) {
+.ja-root[data-theme='dark'] :is(.ja-sidebar, .ja-dock, .ja-tile[data-tone='night']) {
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
 }
 @media (prefers-color-scheme: dark) {
-  .ja-root:not([data-theme='light']) :is(.ja-sidebar, .ja-dock) {
+  .ja-root:not([data-theme='light']) :is(.ja-sidebar, .ja-dock, .ja-tile[data-tone='night']) {
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
   }
 }

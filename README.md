@@ -2,7 +2,7 @@
 
 The admin panel kit for JGB Solutions apps: a React shell, data blocks, forms and SVG charts, styled once, accessible (WCAG 2.1 AA), phone-ready, light and dark. Each app builds its own pages from it. MIT.
 
-**Status: 0.x, being built.** This version has the tokens, the shell and the buttons. Data blocks, forms and actions, and charts follow, each in its own pull request.
+**Status: 0.x, being built.** So far: the tokens, the shell, the buttons and the data blocks. Forms and actions, then the bar chart, follow, each in its own pull request.
 
 ## What it is, and what it isn't
 
@@ -64,6 +64,15 @@ Every class is prefixed `ja-` and every token lives on `.ja-root` (AdminShell's 
 - `Dock`: up to 5 items, icon over label.
 - `PageHeader`: the page's one h1, a line of context, desktop-only `tools` (search, theme, notifications) and `actions` (one primary).
 - `TopSearch`, `ThemeToggle`, `useAdminTheme()`.
+
+### Data blocks
+
+- `Bento` and `Tile` (`span` of 12, `rowSpan`, `phoneSpan` of 2, `tone="plain" | "night" | "sun"`, optional `title` and `actions`).
+- `StatTile`: label, number, `delta` (up or down, coloured by whether it's good news), `note`, and a `Meter` or `AvatarStack` inside.
+- `HeroChartTile`: the dark tile with the big number, its delta, a period switch (`SegmentedControl`) and a `LineChart`.
+- `DataTable`: column headers, any cell (`PersonCell`, `StatusBadge`, `RowAction`…), rows that become cards on phones (each column's `phone` setting places it), skeleton rows while loading, an empty state that says what to do, and a one-second highlight for changed rows (`flash`). `FilterTabs` and `Pagination` sit around it.
+- `ActivityFeed`: icon, sentence and time, grouped by day; loading and empty states.
+- `LineChart`: one series, a fading fill, the last point marked, labels underneath, and a table of the values for screen readers.
 
 ### Basics
 
