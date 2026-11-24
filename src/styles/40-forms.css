@@ -267,7 +267,7 @@ textarea.ja-input {
   .ja-toasts {
     left: 14px;
     right: 14px;
-    bottom: calc(max(16px, env(safe-area-inset-bottom)) + 80px);
+    bottom: calc(var(--ja-dock-height) + var(--ja-dock-bottom) + 12px);
     justify-items: stretch;
   }
   .ja-toast {
