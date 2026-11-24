@@ -1,0 +1,29 @@
+{
+  // `bun run typecheck` (bun check) checks everything; `bun run build` emits the published .d.ts files
+  // from src/ with tsconfig.build.json.
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noEmit": true,
+    "target": "es2022",
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "types": ["bun"],
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "scripts/**/*.ts",
+    "playground/**/*.ts",
+    "playground/**/*.tsx",
+    "e2e/**/*.ts",
+    "playwright.config.ts"
+  ]
+}
