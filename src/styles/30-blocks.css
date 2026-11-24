@@ -484,6 +484,13 @@
   .ja-pager > span {
     display: none;
   }
+  /* A changed row lights up as one card. */
+  .ja-table tr[data-flash='true'] {
+    animation: ja-flash 1s ease-out;
+  }
+  .ja-table tr[data-flash='true'] td {
+    animation: none;
+  }
 }
 
 /* Charts */

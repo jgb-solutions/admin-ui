@@ -29,6 +29,18 @@ for (const theme of ['light', 'dark'] as const) {
       await page.screenshot({ path: `${DIR}/overview-loading-${label}-${theme}.png`, fullPage: !mobile })
       await open(page, theme, '?state=empty#users')
       await page.screenshot({ path: `${DIR}/users-empty-${label}-${theme}.png`, fullPage: !mobile })
+      await open(page, theme, '#settings')
+      await page.getByLabel('Site name').fill('')
+      await page.screenshot({ path: `${DIR}/settings-${label}-${theme}.png`, fullPage: !mobile })
+      await open(page, theme, '#users')
+      await page.getByRole('combobox', { name: 'Role for Ada Okafor' }).selectOption('Editor')
+      await page.locator('.ja-toast').waitFor()
+      await page.waitForTimeout(1100) // past the toast's slide-in and the row's highlight
+      await page.screenshot({ path: `${DIR}/toast-${label}-${theme}.png` })
+      await page.getByRole('button', { name: 'Suspend Priya Nair' }).click()
+      await page.getByRole('dialog').getByLabel('Reason (optional)').fill('Spam links')
+      await page.waitForTimeout(300) // past the dialog's fade-in
+      await page.screenshot({ path: `${DIR}/dialog-${label}-${theme}.png` })
       if (!mobile) {
         await open(page, theme, '#overview')
         await page.getByRole('button', { name: 'Collapse the menu to icons' }).click()

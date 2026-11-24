@@ -2,7 +2,7 @@
 
 The admin panel kit for JGB Solutions apps: a React shell, data blocks, forms and SVG charts, styled once, accessible (WCAG 2.1 AA), phone-ready, light and dark. Each app builds its own pages from it. MIT.
 
-**Status: 0.x, being built.** So far: the tokens, the shell, the buttons and the data blocks. Forms and actions, then the bar chart, follow, each in its own pull request.
+**Status: 0.x, being built.** So far: the tokens, the shell, the buttons, the data blocks, and forms and actions. The bar chart follows in its own pull request.
 
 ## What it is, and what it isn't
 
@@ -73,6 +73,15 @@ Every class is prefixed `ja-` and every token lives on `.ja-root` (AdminShell's 
 - `DataTable`: column headers, any cell (`PersonCell`, `StatusBadge`, `RowAction`…), rows that become cards on phones (each column's `phone` setting places it), skeleton rows while loading, an empty state that says what to do, and a one-second highlight for changed rows (`flash`). `FilterTabs` and `Pagination` sit around it.
 - `ActivityFeed`: icon, sentence and time, grouped by day; loading and empty states.
 - `LineChart`: one series, a fading fill, the last point marked, labels underneath, and a table of the values for screen readers.
+
+### Forms and actions
+
+- `TextInput`, `TextArea`, `Select` (native), each with its `label`, `hint` and `error` tied to the control; `Field` does the same for any other control.
+- `Checkbox`, and `Switch` for settings that apply at once (`role="switch"`).
+- `ConfirmDialog`: the browser's own `<dialog>` (focus stays inside, Escape and the backdrop cancel, focus returns), a button that names the action ("Suspend Leo Martin"), destructive styling.
+- `useToast()`: `toast.done('Suspended Leo Martin.')` (gone after 4 s) and `toast.error(…)` (stays until dismissed); above the dock on phones.
+- `RolePicker`: an inline role select for a table row; roles listed in `confirm` ask first ("Make Ada Okafor an Admin?").
+- `BanControl`: suspend with an optional reason, after a confirmation, or restore.
 
 ### Basics
 

@@ -5,8 +5,10 @@ import {
   AdminShell,
   Avatar,
   AvatarStack,
+  BanControl,
   Bento,
   Button,
+  Checkbox,
   DataTable,
   FilterTabs,
   HeroChartTile,
@@ -17,12 +19,18 @@ import {
   Pagination,
   PEOPLE_STATUS,
   PersonCell,
+  RolePicker,
   RowAction,
+  Select,
   StatTile,
   StatusBadge,
+  Switch,
+  TextArea,
+  TextInput,
   ThemeToggle,
   Tile,
   TopSearch,
+  useToast,
   type Column,
   type NavSection,
   type RenderLink,
@@ -82,16 +90,31 @@ const hashLink =
 
 type Filter = 'all' | 'admins' | 'suspended'
 
+const ROLES = [
+  { value: 'Admin', label: 'Admin' },
+  { value: 'Editor', label: 'Editor' },
+  { value: 'Member', label: 'Member' },
+] as const
+const pause = () => new Promise((resolve) => setTimeout(resolve, 250))
+
 function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
+  const toast = useToast()
+  const [people, setPeople] = useState(PEOPLE)
+  const [flash, setFlash] = useState<ReadonlySet<string>>(new Set())
+  const update = (id: string, change: Partial<Person>) => {
+    setPeople((all) => all.map((p) => (p.id === id ? { ...p, ...change } : p)))
+    setFlash(new Set([id]))
+    setTimeout(() => setFlash(new Set()), 1000)
+  }
   const [filter, setFilter] = useState<Filter>('all')
   const [query, setQuery] = useState(STATE === 'empty' ? 'zebra' : '')
   const [page, setPage] = useState(1)
   const rows = useMemo(
     () =>
-      PEOPLE.filter((p) => (filter === 'admins' ? p.role === 'Admin' : filter === 'suspended' ? p.status === 'suspended' : true)).filter(
-        (p) => !query || `${p.name} ${p.email}`.toLowerCase().includes(query.toLowerCase()),
-      ),
-    [filter, query],
+      people
+        .filter((p) => (filter === 'admins' ? p.role === 'Admin' : filter === 'suspended' ? p.status === 'suspended' : true))
+        .filter((p) => !query || `${p.name} ${p.email}`.toLowerCase().includes(query.toLowerCase())),
+    [people, filter, query],
   )
   const pages = Math.max(1, Math.ceil(rows.length / pageSize))
   const shown = rows.slice((page - 1) * pageSize, page * pageSize)
@@ -101,7 +124,24 @@ function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
       header: 'Person',
       cell: (p) => <PersonCell name={p.name} detail={p.email} avatar={<Avatar name={p.name} shape="soft" />} />,
     },
-    { key: 'role', header: 'Role', cell: (p) => p.role, phone: { order: 3 } },
+    {
+      key: 'role',
+      header: 'Role',
+      phone: { order: 3 },
+      cell: (p) => (
+        <RolePicker
+          name={p.name}
+          roles={ROLES}
+          value={p.role}
+          confirm={{ Admin: 'Admins can change everyone’s role and suspend people.' }}
+          onChange={async (role) => {
+            await pause()
+            update(p.id, { role })
+            toast.done(`${p.name} is now ${role === 'Admin' || role === 'Editor' ? 'an' : 'a'} ${role}.`)
+          }}
+        />
+      ),
+    },
     {
       key: 'status',
       header: 'Status',
@@ -116,14 +156,25 @@ function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
       align: 'end',
       phone: { order: 4, align: 'end' },
       cell: (p) =>
-        p.status === 'suspended' ? (
-          <RowAction aria-label={`Restore ${p.name}`}>Restore</RowAction>
-        ) : p.status === 'invited' ? (
-          <RowAction aria-label={`Resend invite to ${p.name}`}>Resend invite</RowAction>
-        ) : (
-          <RowAction danger aria-label={`Suspend ${p.name}`}>
-            Suspend
+        p.status === 'invited' ? (
+          <RowAction aria-label={`Resend invite to ${p.name}`} onClick={() => toast.done(`Invite sent to ${p.name} again.`)}>
+            Resend invite
           </RowAction>
+        ) : (
+          <BanControl
+            name={p.name}
+            suspended={p.status === 'suspended'}
+            onSuspend={async () => {
+              await pause()
+              update(p.id, { status: 'suspended' })
+              toast.done(`Suspended ${p.name}.`)
+            }}
+            onRestore={async () => {
+              await pause()
+              update(p.id, { status: 'active' })
+              toast.done(`Restored ${p.name}.`)
+            }}
+          />
         ),
     },
   ]
@@ -163,6 +214,7 @@ function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
         columns={columns}
         rows={shown}
         rowKey={(p) => p.id}
+        flash={flash}
         loading={STATE === 'loading'}
         empty={
           <>
@@ -232,6 +284,50 @@ function Overview() {
   )
 }
 
+function Settings() {
+  const toast = useToast()
+  const [name, setName] = useState('Tidepool')
+  const [signUps, setSignUps] = useState(true)
+  const [digest, setDigest] = useState(false)
+  const error = name.trim() ? undefined : 'Enter the site’s name.'
+  return (
+    <Bento aria-label="Settings">
+      <Tile span={7} title="Site">
+        <form
+          noValidate
+          onSubmit={(event) => {
+            event.preventDefault()
+            if (!error) toast.done('Settings saved.')
+          }}
+        >
+          <TextInput label="Site name" value={name} onChange={(e) => setName(e.target.value)} error={error} required />
+          <TextInput label="Contact email" type="email" defaultValue="hello@example.com" hint="Shown on the contact page." />
+          <Select
+            label="Time zone"
+            defaultValue="utc"
+            options={[
+              { value: 'utc', label: 'UTC' },
+              { value: 'ny', label: 'New York (UTC−5)' },
+              { value: 'tokyo', label: 'Tokyo (UTC+9)' },
+            ]}
+          />
+          <TextArea label="Welcome message" defaultValue="Welcome to Tidepool." hint="Up to 200 characters." maxLength={200} />
+          <Checkbox label="Show the welcome message to new people" hint="Once, on their first visit." defaultChecked />
+          <Button type="submit">Save settings</Button>
+        </form>
+      </Tile>
+      <Tile span={5} title="Sign-in">
+        <Switch label="Open sign-up" hint="Anyone can create an account." checked={signUps} onChange={setSignUps} />
+        <Switch label="Weekly digest email" hint="To admins, on Mondays." checked={digest} onChange={setDigest} />
+        <Switch label="Passkeys" hint="Always on." checked disabled onChange={() => {}} />
+        <Button variant="quiet" onClick={() => toast.error('Couldn’t reach the server. Check the connection and try again.')}>
+          Show an error toast
+        </Button>
+      </Tile>
+    </Bento>
+  )
+}
+
 function Playground() {
   const [page, setPage] = useState<Page>(() => pageOf(location.hash))
   return (
@@ -245,8 +341,14 @@ function Playground() {
       mobileActions={<IconButton label="Notifications" icon={<icons.bell />} dot />}
     >
       <PageHeader
-        title={page === 'users' ? 'Users' : "Hi Maya, it's a good week."}
-        description={page === 'users' ? 'Everyone with an account.' : 'Tidepool at a glance.'}
+        title={page === 'users' ? 'Users' : page === 'settings' ? 'Settings' : "Hi Maya, it's a good week."}
+        description={
+          page === 'users'
+            ? 'Everyone with an account.'
+            : page === 'settings'
+              ? 'How Tidepool works for everyone.'
+              : 'Tidepool at a glance.'
+        }
         tools={
           <>
             <TopSearch label="Search anything" />
@@ -260,6 +362,8 @@ function Playground() {
         <Bento aria-label="Users">
           <UsersTile span={12} pageSize={6} />
         </Bento>
+      ) : page === 'settings' ? (
+        <Settings />
       ) : (
         <Overview />
       )}
