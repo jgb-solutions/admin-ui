@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tgz
+.DS_Store
+.worktrees/
+test-results/
+playwright-report/
+playground/dist/
+.screenshots/
