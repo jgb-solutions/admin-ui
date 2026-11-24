@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { plainLink, type NavItem, type RenderLink } from './nav'
 
 export type DockProps = {
@@ -10,20 +11,23 @@ export type DockProps = {
 export function Dock({ items, renderLink = plainLink }: DockProps) {
   return (
     <nav className="ja-dock" aria-label="Admin">
-      {items.slice(0, 5).map((item) =>
-        renderLink({
-          item,
-          className: 'ja-docklink',
-          'aria-current': item.current ? 'page' : undefined,
-          title: undefined,
-          children: (
-            <>
-              {item.icon}
-              <span>{item.label}</span>
-            </>
-          ),
-        }),
-      )}
+      {items.slice(0, 5).map((item) => (
+        // The app's renderLink returns an element without a key, so the key goes on a wrapper.
+        <Fragment key={item.key}>
+          {renderLink({
+            item,
+            className: 'ja-docklink',
+            'aria-current': item.current ? 'page' : undefined,
+            title: undefined,
+            children: (
+              <>
+                {item.icon}
+                <span>{item.label}</span>
+              </>
+            ),
+          })}
+        </Fragment>
+      ))}
     </nav>
   )
 }

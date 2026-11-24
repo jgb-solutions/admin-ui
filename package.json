@@ -54,6 +54,7 @@
     "format": "bun fmt .",
     "format:check": "bun fmt --check .",
     "check:package": "bun scripts/check-package.ts",
+    "check:install": "bun scripts/check-install.ts",
     "prepublishOnly": "bun run build && bun run check:package"
   },
   "peerDependencies": {

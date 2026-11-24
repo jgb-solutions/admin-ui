@@ -28,6 +28,8 @@ jobs:
       - run: bun run test
       # The built files: loadable, scoped CSS, and free of anything app-specific (scripts/check-package.ts).
       - run: bun run check:package
+      # The packed package in an empty project with React alone: loads, renders without React warnings, type-checks.
+      - run: bun run check:install
       # The components in a real browser: axe (WCAG 2.1 AA) in light and dark, desktop and phone.
       - run: bunx playwright install --with-deps chromium
       - run: bun run test:e2e
