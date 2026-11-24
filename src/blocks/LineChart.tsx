@@ -1,4 +1,5 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
+import { ChartPoints } from './ChartPoints'
 
 export type ChartPoint = { label: string; value: number }
 
@@ -45,6 +46,7 @@ export type LineChartProps = {
 
 /**
  * One series as a smooth line with a fading fill and the last point marked, day labels underneath.
+ * Each value shows on hover, and from the keyboard (Tab to the chart, then the arrow keys).
  * SVG, no chart library; it stretches to its tile's width.
  */
 export function LineChart({ data, label, color = 'sun', height = 150, format = (v) => v.toLocaleString('en-US') }: LineChartProps) {
@@ -56,7 +58,8 @@ export function LineChart({ data, label, color = 'sun', height = 150, format = (
     height,
   )
   const line = smoothPath(points)
-  const last = points[points.length - 1]
+  const [active, setActive] = useState<number | null>(null)
+  const shown = active === null ? points[points.length - 1] : points[active]
   const stroke = color === 'sun' ? 'var(--sun)' : 'var(--brand)'
   return (
     <figure className="ja-chart">
@@ -71,13 +74,28 @@ export function LineChart({ data, label, color = 'sun', height = 150, format = (
           {points.length > 1 && <path d={`${line} L${width} ${height} L0 ${height} Z`} fill={`url(#${id}-fade)`} />}
           <path d={line} fill="none" stroke={stroke} strokeWidth="3.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
         </svg>
-        {/* The last point, drawn in HTML so it stays round while the SVG stretches. */}
-        {last && (
+        {/* The last point (or the one hovered or focused), in HTML so it stays round while the SVG stretches. */}
+        {active !== null && shown && <span className="ja-chart-guide" style={{ left: `${(shown[0] / width) * 100}%` }} />}
+        {shown && (
           <span
             className="ja-chart-dot"
-            style={{ left: `${(last[0] / width) * 100}%`, top: `${(last[1] / height) * 100}%`, background: stroke }}
+            style={{ left: `${(shown[0] / width) * 100}%`, top: `${(shown[1] / height) * 100}%`, background: stroke }}
           />
         )}
+        <ChartPoints
+          names={data.map((point) => `${point.label}: ${format(point.value)}`)}
+          centers={points.map(([x]) => (x / width) * 100)}
+          width={100 / Math.max(1, data.length - 1)}
+          active={active}
+          onActive={setActive}
+          tipTop={(i) => ((points[i]?.[1] ?? 0) / height) * 100}
+          tip={(i) => (
+            <>
+              <span>{data[i]?.label}</span>
+              <strong>{format(data[i]?.value ?? 0)}</strong>
+            </>
+          )}
+        />
       </div>
       <div className="ja-chart-labels" aria-hidden="true">
         {data.map((point) => (
