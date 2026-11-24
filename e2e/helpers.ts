@@ -9,6 +9,8 @@ export async function open(page: Page, theme: 'light' | 'dark', hash = '') {
     sessionStorage.setItem('seeded', '1')
     localStorage.setItem('jgb-admin-theme', choice)
   }, theme)
+  // A fresh load each time: going from /#a to /#b alone only changes the hash.
+  await page.goto('about:blank')
   await page.goto(`/${hash}`)
   await expect(page.locator('.ja-root')).toHaveAttribute('data-theme', theme)
   await page.evaluate(() => document.fonts.ready)

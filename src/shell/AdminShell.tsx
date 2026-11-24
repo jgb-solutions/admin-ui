@@ -1,5 +1,6 @@
 import { useMemo, type CSSProperties, type ReactNode } from 'react'
 import { inkOn } from '../contrast'
+import { ToastProvider } from '../forms/Toast'
 import { ThemeProvider, useThemeState, type ThemeChoice } from '../theme'
 import { Dock } from './Dock'
 import type { NavItem, NavSection, RenderLink } from './nav'
@@ -57,23 +58,25 @@ export function AdminShell({
   return (
     <ThemeProvider value={state}>
       <div className="ja-root" data-theme={state.choice === 'system' ? undefined : state.choice} style={style}>
-        <div className="ja-shell">
-          <Sidebar app={app} sections={nav} user={user} renderLink={renderLink} footer={sidebarFooter} />
-          <main className="ja-main" id="main">
-            <div className="ja-mobile-top">
-              <span className="ja-mark" aria-hidden="true">
-                {app.mark}
-              </span>
-              <span>{app.name}</span>
-              <div className="ja-actions">
-                <ThemeToggle />
-                {mobileActions}
+        <ToastProvider>
+          <div className="ja-shell">
+            <Sidebar app={app} sections={nav} user={user} renderLink={renderLink} footer={sidebarFooter} />
+            <main className="ja-main" id="main">
+              <div className="ja-mobile-top">
+                <span className="ja-mark" aria-hidden="true">
+                  {app.mark}
+                </span>
+                <span>{app.name}</span>
+                <div className="ja-actions">
+                  <ThemeToggle />
+                  {mobileActions}
+                </div>
               </div>
-            </div>
-            {children}
-          </main>
-        </div>
-        <Dock items={dock} renderLink={renderLink} />
+              {children}
+            </main>
+          </div>
+          <Dock items={dock} renderLink={renderLink} />
+        </ToastProvider>
       </div>
     </ThemeProvider>
   )

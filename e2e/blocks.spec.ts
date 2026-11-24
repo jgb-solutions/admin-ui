@@ -49,8 +49,8 @@ test('phone: tiles stack in two columns and table rows become cards', async ({ p
   expect(reports!.width).toBeLessThan(200)
   await expect(page.getByRole('table', { name: 'Users' }).locator('thead')).toBeHidden()
   const row = page.getByRole('table', { name: 'Users' }).locator('tbody tr').first()
-  const status = await row.getByText('Active').boundingBox()
-  const person = await row.getByText('Priya Nair').boundingBox()
+  const status = await row.getByText('Active', { exact: true }).boundingBox()
+  const person = await row.getByText('Priya Nair', { exact: true }).boundingBox()
   // Status sits on the person's line, to the right.
   expect(Math.abs(status!.y - person!.y)).toBeLessThan(24)
   expect(status!.x).toBeGreaterThan(person!.x)
