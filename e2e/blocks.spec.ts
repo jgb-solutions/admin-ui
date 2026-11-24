@@ -55,3 +55,15 @@ test('phone: tiles stack in two columns and table rows become cards', async ({ p
   expect(Math.abs(status!.y - person!.y)).toBeLessThan(24)
   expect(status!.x).toBeGreaterThan(person!.x)
 })
+
+for (const theme of ['light', 'dark'] as const) {
+  test(`charts are accessible, each with a table of its values (${theme})`, async ({ page }) => {
+    await open(page, theme, '#analytics')
+    await expectAccessible(page)
+    await expectFitsScreen(page)
+    const bars = page.getByRole('table', { name: 'Sign-ups per day, this week and last' })
+    await expect(bars.getByRole('columnheader')).toHaveText(['This week', 'Last week'])
+    await expect(bars.getByRole('row', { name: /Thu/ })).toContainText('66')
+    await expect(page.getByRole('img', { name: 'Reports opened this month, by reason' }).locator('rect')).toHaveCount(4)
+  })
+}

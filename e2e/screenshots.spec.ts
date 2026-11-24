@@ -29,6 +29,8 @@ for (const theme of ['light', 'dark'] as const) {
       await page.screenshot({ path: `${DIR}/overview-loading-${label}-${theme}.png`, fullPage: !mobile })
       await open(page, theme, '?state=empty#users')
       await page.screenshot({ path: `${DIR}/users-empty-${label}-${theme}.png`, fullPage: !mobile })
+      await open(page, theme, '#analytics')
+      await page.screenshot({ path: `${DIR}/analytics-${label}-${theme}.png`, fullPage: !mobile })
       await open(page, theme, '#settings')
       await page.getByLabel('Site name').fill('')
       await page.screenshot({ path: `${DIR}/settings-${label}-${theme}.png`, fullPage: !mobile })
