@@ -80,9 +80,12 @@ function Playground() {
         <Button>Save changes</Button>
         <Button variant="quiet">Cancel</Button>
         <Button variant="danger">Suspend Leo Martin</Button>
-        <Button size="small" variant="quiet">
-          Resend invite
-        </Button>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--muted)' }}>
+          Small, for actions in a row:
+          <Button size="small" variant="quiet">
+            Resend invite
+          </Button>
+        </span>
         <Button disabled>Saving…</Button>
       </section>
       <p style={{ color: 'var(--muted)', maxWidth: 560 }}>
@@ -90,6 +93,8 @@ function Playground() {
       </p>
       {/* Tall enough to show the sticky sidebar and the floating dock over content. */}
       <div style={{ height: 900 }} aria-hidden="true" />
+      {/* The page's last control: on a phone it must end above the dock (e2e/shell.spec.ts). */}
+      <Button variant="quiet">Load more</Button>
     </AdminShell>
   )
 }

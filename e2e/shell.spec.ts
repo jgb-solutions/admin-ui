@@ -58,15 +58,20 @@ test('phone: the end of a long page and every focused control scroll clear of th
   test.skip(!isMobile, 'phones only')
   await open(page, 'light')
   const dockTop = async () => (await page.locator('.ja-dock').boundingBox())?.y ?? 0
-  const last = page.locator('.ja-main').locator('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])').last()
+  const controls = page.locator('.ja-main').locator('a, button:not(:disabled), input, select, textarea, [tabindex]:not([tabindex="-1"])')
+  const last = controls.last()
   // Scrolled to the very end, the page's last control sits above the dock.
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
   const end = await last.boundingBox()
   expect((end?.y ?? 0) + (end?.height ?? 0)).toBeLessThanOrEqual(await dockTop())
-  // Reached from the keyboard (from the top), it is scrolled into view above the dock, not under it.
+  // A control just below the screen, reached from the keyboard, scrolls into view above the dock, not under it.
   await page.evaluate(() => window.scrollTo(0, 0))
-  await last.focus()
-  const focused = await last.boundingBox()
+  const below = await controls.evaluateAll((els) => els.findIndex((el) => el.getBoundingClientRect().top > window.innerHeight + 40))
+  expect(below).toBeGreaterThanOrEqual(0)
+  const control = controls.nth(below)
+  await control.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - window.innerHeight + 1))
+  await control.focus()
+  const focused = await control.boundingBox()
   expect((focused?.y ?? 0) + (focused?.height ?? 0)).toBeLessThanOrEqual(await dockTop())
 })
 
