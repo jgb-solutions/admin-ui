@@ -2,7 +2,7 @@
 
 The admin panel kit for JGB Solutions apps: a React shell, data blocks, forms and SVG charts, styled once, accessible (WCAG 2.1 AA), phone-ready, light and dark. Each app builds its own pages from it. MIT.
 
-**Status: 0.1.0, the first version:** the tokens, the shell, data blocks, forms and actions, and charts.
+**Status: 0.1.x, the first version:** the tokens, the shell, data blocks, forms and actions, and charts.
 
 ## What it is, and what it isn't
 
@@ -128,6 +128,6 @@ bun run build && bun run check:package
 
 ## Publishing
 
-Releases come from GitHub, with provenance: GitHub Actions publishes (`.github/workflows/publish.yml`) when a GitHub release is published for the tag `vX.Y.Z` matching `package.json`'s version, after the run is approved in the `npm` environment. It uses npm's trusted publishing (OIDC): no npm token is stored anywhere. A stable version moves the `latest` tag; a prerelease (`0.2.0-beta.1`) goes to `next`. The first version is published by hand, because npm only lets a trusted publisher be set up on a package that already exists.
+Releases come from GitHub, with provenance: GitHub Actions publishes (`.github/workflows/publish.yml`) when a GitHub release is published for the tag `vX.Y.Z` matching `package.json`'s version, after the run is approved in the `npm` environment. It uses npm's trusted publishing (OIDC): no npm token is stored anywhere. A stable version moves the `latest` tag; a prerelease (`0.2.0-beta.1`) goes to `next`. 0.1.0 was published by hand, because npm only lets a trusted publisher be set up on a package that already exists, so it has no provenance; 0.1.1 is the first from GitHub.
 
 Versions follow semver. Until 1.0, a minor version may change components' props; the changelog says how.

@@ -42,10 +42,12 @@ jobs:
             exit 1
           fi
       - run: bun run format:check
+      # Build first: scripts/check-package.ts imports dist/ and is type checked with the rest.
+      - run: bun run build
       - run: bun run typecheck
       - run: bun run test
-      - run: bun run build
       - run: bun run check:package
+      - run: bun run check:install
       # The E2E tests: axe in light and dark, desktop and phone, against the playground.
       - run: bunx playwright install --with-deps chromium
       - run: bun run test:e2e
