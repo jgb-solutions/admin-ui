@@ -102,17 +102,20 @@ export function LineChart({ data, label, color = 'sun', height = 150, format = (
           <span key={point.label}>{point.label}</span>
         ))}
       </div>
-      <table className="ja-sr">
-        <caption>{label}</caption>
-        <tbody>
-          {data.map((point) => (
-            <tr key={point.label}>
-              <th scope="row">{point.label}</th>
-              <td>{format(point.value)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* In a div: a table ignores the 1px box and its overflow, so as .ja-sr itself it stretched the page. */}
+      <div className="ja-sr">
+        <table>
+          <caption>{label}</caption>
+          <tbody>
+            {data.map((point) => (
+              <tr key={point.label}>
+                <th scope="row">{point.label}</th>
+                <td>{format(point.value)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   )
 }

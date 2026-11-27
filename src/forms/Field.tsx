@@ -32,7 +32,8 @@ export function Field({ label, hint, error, children }: FieldProps) {
         </p>
       )}
       {error && (
-        <p className="ja-field-error" id={errorId}>
+        // role="alert": an error that appears after a submit is read out, not only on focus.
+        <p className="ja-field-error" id={errorId} role="alert">
           <span className="ja-error-mark" aria-hidden="true">
             !
           </span>
