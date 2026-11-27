@@ -102,7 +102,8 @@ const ROLES = [
 ] as const
 const pause = () => new Promise((resolve) => setTimeout(resolve, 250))
 
-function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
+function UsersTile({ span, pageSize: firstSize }: { span: number; pageSize: number }) {
+  const [pageSize, setPageSize] = useState(firstSize)
   const toast = useToast()
   const [people, setPeople] = useState(PEOPLE)
   const [flash, setFlash] = useState<ReadonlySet<string>>(new Set())
@@ -250,6 +251,12 @@ function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
         pages={pages}
         onPage={setPage}
         label="User pages"
+        pageSize={pageSize}
+        pageSizes={[4, 6, 12]}
+        onPageSize={(size) => {
+          setPageSize(size)
+          setPage(1)
+        }}
         summary={rows.length ? `${(page - 1) * pageSize + 1}–${(page - 1) * pageSize + shown.length} of ${rows.length} people` : undefined}
       />
     </Tile>
