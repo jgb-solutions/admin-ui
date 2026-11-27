@@ -63,7 +63,8 @@ Every class is prefixed `ja-` and every token lives on `.ja-root` (AdminShell's 
 - `Sidebar`: collapses to an icon rail, remembered per browser. In the rail, labels become tooltips and stay the links' names; counts over 99 show as "99+".
 - `Dock`: up to 5 items, icon over label.
 - `PageHeader`: the page's one h1, a line of context, desktop-only `tools` (search, theme, notifications) and `actions` (one primary).
-- `TopSearch`, `ThemeToggle`, `useAdminTheme()`.
+- `TopSearch`, `useAdminTheme()`.
+- `ThemeToggle`: Light, Dark or Match system, a radio group. The phone's top bar has one; put another in the sidebar with `sidebarFooter={<ThemeToggle tone="night" />}` (names shown; one cycling button when the sidebar is collapsed).
 
 ### Data blocks
 
