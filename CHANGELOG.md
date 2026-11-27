@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- `PageSize`: "Rows per page", a native select (default choices `PAGE_SIZES`: 25, 50, 100, 200). The app keeps the size (e.g. `?per=50`) and goes back to the first page when it changes. Use it beside a keyset pager, or through `Pagination`'s new `pageSize`, `onPageSize` and `pageSizes`.
+
 ## 0.1.4
 
 - `DataTable` sorting. A column with `sort` gets a header button (the arrow shows the direction; `aria-sort` on the sorted header). The app keeps the sort (`sort`, `onSortChange`), e.g. in the URL's search params. With `sortRows`, the table sorts the rows it's given with the column's `compare` (when the app passes all the rows); without it, the app or the server sorts. On phones, where headers are hidden, a "Sort by" list does the same.

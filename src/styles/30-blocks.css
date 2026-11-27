@@ -381,6 +381,22 @@ th[data-align='end'] .ja-sort {
   color: var(--muted);
   font-size: 14px;
 }
+.ja-page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.ja-page-size .ja-select-wrap {
+  display: inline-block;
+}
+.ja-page-size .ja-select {
+  width: auto;
+  min-height: 36px;
+  padding: 6px 34px 6px 12px;
+  font-size: 14px;
+}
 .ja-pages {
   display: flex;
   gap: 6px;

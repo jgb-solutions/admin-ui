@@ -1,6 +1,6 @@
 {
   "name": "@jgb-solutions/admin",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "The admin panel kit for JGB Solutions apps: a React shell, data blocks, forms and SVG charts, styled once, accessible, phone-ready, light and dark.",
   "license": "MIT",
   "author": "JGB Solutions",

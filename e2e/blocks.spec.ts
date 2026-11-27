@@ -69,6 +69,17 @@ test('phone: the users table sorts from a "Sort by" list', async ({ page, isMobi
   await expectFitsScreen(page)
 })
 
+test('the users table: rows per page, back to the first page', async ({ page }) => {
+  await open(page, 'light', '#users')
+  const rows = page.getByRole('table', { name: 'Users' }).locator('tbody tr')
+  await page.getByRole('navigation', { name: 'User pages' }).getByRole('button', { name: 'Page 2' }).click()
+  await expect(rows).toHaveCount(2)
+  await page.getByLabel('Rows per page').selectOption('12')
+  await expect(rows).toHaveCount(8)
+  await expect(page.getByRole('navigation', { name: 'User pages' })).toHaveCount(0)
+  await expectFitsScreen(page)
+})
+
 test('phone: tiles stack in two columns and table rows become cards', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'phones only')
   await open(page, 'light')
