@@ -97,29 +97,32 @@ export function BarChart({ labels, series, label, height = 180, format = (v) => 
           <span key={name}>{name}</span>
         ))}
       </div>
-      <table className="ja-sr">
-        <caption>{label}</caption>
-        <thead>
-          <tr>
-            <td />
-            {series.map((s) => (
-              <th key={s.label} scope="col">
-                {s.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {labels.map((name, g) => (
-            <tr key={name}>
-              <th scope="row">{name}</th>
+      {/* In a div: a table ignores the 1px box and its overflow, so as .ja-sr itself it stretched the page. */}
+      <div className="ja-sr">
+        <table>
+          <caption>{label}</caption>
+          <thead>
+            <tr>
+              <td />
               {series.map((s) => (
-                <td key={s.label}>{format(s.values[g] ?? 0)}</td>
+                <th key={s.label} scope="col">
+                  {s.label}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {labels.map((name, g) => (
+              <tr key={name}>
+                <th scope="row">{name}</th>
+                {series.map((s) => (
+                  <td key={s.label}>{format(s.values[g] ?? 0)}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   )
 }

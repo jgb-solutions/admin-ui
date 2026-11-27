@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `LineChart`, `BarChart`: the screen-reader table of values sits in a hidden `div`. A table ignores the hidden box's size and overflow, so a 30-point chart stretched the page by about 200 px.
 - `Tile`: a tile with a `title` is a region named by its heading (`aria-labelledby`), so assistive technology and tests find it by name. An `aria-label` or `aria-labelledby` the app passes still wins.
 - `Field` (and `TextInput`, `TextArea`, `Select`): the error is `role="alert"`, so an error that appears after a submit is read out.
 - `.ja-form`: a form inside a tile, spaced from the text above it and from what follows.
