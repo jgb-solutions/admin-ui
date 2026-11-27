@@ -67,7 +67,7 @@ Every class is prefixed `ja-` and every token lives on `.ja-root` (AdminShell's 
 
 ### Data blocks
 
-- `Bento` and `Tile` (`span` of 12, `rowSpan`, `phoneSpan` of 2, `tone="plain" | "night" | "sun"`, optional `title` and `actions`).
+- `Bento` and `Tile` (`span` of 12, `rowSpan`, `phoneSpan` of 2, `tone="plain" | "night" | "sun"`, optional `title` and `actions`); a titled tile is a region named by its title).
 - `StatTile`: label, number, `delta` (up or down, coloured by whether it's good news), `note`, and a `Meter` or `AvatarStack` inside.
 - `HeroChartTile`: the dark tile with the big number, its delta, a period switch (`SegmentedControl`) and a `LineChart`.
 - `DataTable`: column headers, any cell (`PersonCell`, `StatusBadge`, `RowAction`…), rows that become cards on phones (each column's `phone` setting places it), skeleton rows while loading, an empty state that says what to do, and a one-second highlight for changed rows (`flash`). `FilterTabs` and `Pagination` sit around it.
@@ -76,7 +76,7 @@ Every class is prefixed `ja-` and every token lives on `.ja-root` (AdminShell's 
 
 ### Forms and actions
 
-- `TextInput`, `TextArea`, `Select` (native), each with its `label`, `hint` and `error` tied to the control; `Field` does the same for any other control.
+- `TextInput`, `TextArea`, `Select` (native), each with its `label`, `hint` and `error` tied to the control; `Field` does the same for any other control; an error is read out when it appears. Put a form inside a tile in `<form className="ja-form">`.
 - `Checkbox`, and `Switch` for settings that apply at once (`role="switch"`).
 - `ConfirmDialog`: the browser's own `<dialog>` (focus stays inside, Escape and the backdrop cancel, focus returns), a button that names the action ("Suspend Leo Martin"), destructive styling.
 - `useToast()`: `toast.done('Suspended Leo Martin.')` (gone after 4 s) and `toast.error(…)` (stays until dismissed); above the dock on phones.

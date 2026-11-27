@@ -280,3 +280,8 @@ textarea.ja-input {
     width: 100%;
   }
 }
+
+/* A form inside a tile: spaced from the text above it and from what follows. */
+.ja-form {
+  margin: 14px 0 20px;
+}

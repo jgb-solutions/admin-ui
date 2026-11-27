@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `Tile`: a tile with a `title` is a region named by its heading (`aria-labelledby`), so assistive technology and tests find it by name. An `aria-label` or `aria-labelledby` the app passes still wins.
+- `Field` (and `TextInput`, `TextArea`, `Select`): the error is `role="alert"`, so an error that appears after a submit is read out.
+- `.ja-form`: a form inside a tile, spaced from the text above it and from what follows.
+
 ## 0.1.1
 
 - The first version published from GitHub, with provenance (npm trusted publishing). No changes to the components.
