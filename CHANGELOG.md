@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+
+- `ThemeToggle`: three choices, Light, Dark and Match system, as a radio group (arrow keys, Home and End move and pick; the chosen one is the tab stop). Before, it only switched between light and dark, so the system's theme couldn't be picked again. With `tone="night"` (the sidebar) the names show next to the icons; in a collapsed sidebar it's one button that goes to the next choice ("Theme: Light. Switch to Dark").
+- `icons.screen`: a screen, for the system's theme.
+
 ## 0.1.2
 
 - `LineChart`, `BarChart`: the screen-reader table of values sits in a hidden `div`. A table ignores the hidden box's size and overflow, so a 30-point chart stretched the page by about 200 px.

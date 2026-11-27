@@ -75,16 +75,33 @@ test('phone: the end of a long page and every focused control scroll clear of th
   expect((focused?.y ?? 0) + (focused?.height ?? 0)).toBeLessThanOrEqual(await dockTop())
 })
 
-test('the theme switch changes the theme and is remembered', async ({ page }) => {
+test('the theme switch offers light, dark and the system, and is remembered', async ({ page }) => {
   await open(page, 'light')
   const root = page.locator('.ja-root')
-  await page.getByRole('button', { name: 'Switch to dark mode' }).first().click()
+  const group = page.getByRole('radiogroup', { name: 'Theme' }).first()
+  await group.getByRole('radio', { name: 'Dark' }).click()
   await expect(root).toHaveAttribute('data-theme', 'dark')
   expect(await root.evaluate((el) => getComputedStyle(el).getPropertyValue('--canvas').trim())).toBe('#121022')
   await page.reload()
   await expect(root).toHaveAttribute('data-theme', 'dark')
-  await page.getByRole('button', { name: 'Switch to light mode' }).first().click()
+  await expect(group.getByRole('radio', { name: 'Dark' })).toHaveAttribute('aria-checked', 'true')
+  // The keyboard: an arrow picks the next choice, the system's (no data-theme: the CSS follows it).
+  await group.getByRole('radio', { name: 'Dark' }).focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(group.getByRole('radio', { name: 'Match system' })).toBeFocused()
+  await expect(root).not.toHaveAttribute('data-theme', /./)
+  await page.keyboard.press('Home')
   await expect(root).toHaveAttribute('data-theme', 'light')
+})
+
+test('in a collapsed sidebar the theme switch is one button that goes to the next choice', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await open(page, 'light')
+  await page.getByRole('button', { name: /collapse/i }).click()
+  const sidebar = page.locator('.ja-sidebar')
+  await expect(sidebar.getByRole('radiogroup', { name: 'Theme' })).toBeHidden()
+  await sidebar.getByRole('button', { name: 'Theme: Light. Switch to Dark' }).click()
+  await expect(page.locator('.ja-root')).toHaveAttribute('data-theme', 'dark')
 })
 
 test("the brand's text colour follows the brand: white on a dark brand", async ({ page }) => {

@@ -355,3 +355,81 @@
     color: var(--brand-ink);
   }
 }
+
+/* The theme switch: three choices (light, dark, the system's). Names show in the sidebar; in a
+   collapsed sidebar it's one button that goes to the next choice. */
+.ja-theme {
+  display: inline-flex;
+}
+.ja-theme-options {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--r-pill);
+  background: var(--tile);
+}
+.ja-theme-options button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.ja-theme-options button:hover {
+  color: var(--ink);
+}
+.ja-theme-options button[aria-checked='true'] {
+  background: var(--tile-sunk);
+  color: var(--ink);
+}
+.ja-theme-options svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+.ja-theme-options span {
+  display: none;
+}
+.ja-theme[data-tone='night'] {
+  display: flex;
+}
+.ja-theme[data-tone='night'] .ja-theme-options {
+  flex: 1;
+  background: rgb(255 255 255 / 0.06);
+}
+.ja-theme[data-tone='night'] .ja-theme-options button {
+  flex: 1;
+  padding: 0 6px;
+  color: var(--night-muted);
+}
+.ja-theme[data-tone='night'] .ja-theme-options button:hover {
+  color: var(--night-ink);
+}
+.ja-theme[data-tone='night'] .ja-theme-options button[aria-checked='true'] {
+  background: rgb(255 255 255 / 0.14);
+  color: var(--night-ink);
+}
+.ja-theme[data-tone='night'] .ja-theme-options span {
+  display: inline;
+}
+.ja-theme-cycle {
+  display: none;
+}
+.ja-sidebar[data-collapsed='true'] .ja-theme {
+  justify-content: center;
+}
+.ja-sidebar[data-collapsed='true'] .ja-theme-options {
+  display: none;
+}
+.ja-sidebar[data-collapsed='true'] .ja-theme-cycle {
+  display: inline-grid;
+}

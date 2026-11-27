@@ -393,6 +393,7 @@ function Playground() {
       user={{ name: 'Maya Reyes', role: 'Admin' }}
       renderLink={hashLink(setPage)}
       mobileActions={<IconButton label="Notifications" icon={<icons.bell />} dot />}
+      sidebarFooter={<ThemeToggle tone="night" />}
     >
       <PageHeader
         title={HEADERS[page]?.[0] ?? "Hi Maya, it's a good week."}
@@ -400,7 +401,6 @@ function Playground() {
         tools={
           <>
             <TopSearch label="Search anything" />
-            <ThemeToggle />
             <IconButton label="Notifications" icon={<icons.bell />} dot />
           </>
         }
