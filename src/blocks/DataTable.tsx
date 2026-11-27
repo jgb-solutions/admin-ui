@@ -1,4 +1,6 @@
-import type { CSSProperties, ReactNode } from 'react'
+import { useId, type CSSProperties, type ReactNode } from 'react'
+import { icons } from '../icons'
+import { nextSort, parseSortValue, sortRows, sortValue, type ColumnSort, type TableSort } from './sorting'
 
 export type Column<Row> = {
   key: string
@@ -12,6 +14,8 @@ export type Column<Row> = {
    * puts it on the right, `hidden` drops it, `full` takes the whole width.
    */
   phone?: { order?: number; align?: 'start' | 'end'; hidden?: boolean; full?: boolean } | undefined
+  /** Makes the column sortable (with the table's `sort` and `onSortChange`). */
+  sort?: ColumnSort<Row> | undefined
 }
 
 export type DataTableProps<Row> = {
@@ -25,24 +29,99 @@ export type DataTableProps<Row> = {
   loading?: boolean | undefined
   /** Shown when there are no rows and nothing is loading: say what to do ("Clear the search."). */
   empty?: ReactNode
+  /** The sort the app keeps (e.g. in the URL): which column and which way. Shown on that header. */
+  sort?: TableSort | undefined
+  /** Called with the new sort when a sortable header (or the phone's "Sort by") is used. */
+  onSortChange?: ((sort: TableSort) => void) | undefined
+  /**
+   * The table sorts `rows` itself with the sorted column's `compare`: for when the app passes all the
+   * rows. Leave it off when the server sorts (a page of a long list).
+   */
+  sortRows?: boolean | undefined
 }
 
 /**
  * Daylight's real table (column headers, row actions, inline cells) in Bento's rounded rows. Rows
  * become cards on phones. Search, filters and pagination sit around it (FilterTabs, Pagination).
  */
-export function DataTable<Row>({ label, columns, rows, rowKey, flash, loading = false, empty }: DataTableProps<Row>) {
-  if (!loading && rows.length === 0) return <div className="ja-empty">{empty ?? 'Nothing here yet.'}</div>
+export function DataTable<Row>({
+  label,
+  columns,
+  rows: given,
+  rowKey,
+  flash,
+  loading = false,
+  empty,
+  sort,
+  onSortChange,
+  sortRows: sortHere = false,
+}: DataTableProps<Row>) {
+  const sortId = useId()
+  if (!loading && given.length === 0) return <div className="ja-empty">{empty ?? 'Nothing here yet.'}</div>
+  const sortable = onSortChange ? columns.filter((column) => column.sort) : []
+  const sorted = sort && sortHere ? columns.find((column) => column.key === sort.key) : undefined
+  const rows = sorted && sort ? sortRows(given, sorted.sort?.compare, sort.direction) : given
   return (
     <div className="ja-table-wrap" aria-busy={loading || undefined}>
+      {onSortChange && sortable.length > 0 && (
+        // Phones show rows as cards, with no column headers: the sort is a list there.
+        <div className="ja-sort-phone">
+          <label htmlFor={sortId}>Sort by</label>
+          <span className="ja-select-wrap">
+            <select
+              id={sortId}
+              className="ja-select"
+              value={sort ? sortValue(sort) : ''}
+              onChange={(event) => {
+                const next = parseSortValue(event.target.value)
+                if (next) onSortChange(next)
+              }}
+            >
+              {!sort && <option value="">Choose</option>}
+              {sortable.flatMap((column) => {
+                const name = column.sort?.label ?? (typeof column.header === 'string' ? column.header : (column.srHeader ?? column.key))
+                return (['asc', 'desc'] as const).map((direction) => (
+                  <option key={`${column.key}:${direction}`} value={sortValue({ key: column.key, direction })}>
+                    {`${name}, ${direction === 'asc' ? (column.sort?.ascLabel ?? 'ascending') : (column.sort?.descLabel ?? 'descending')}`}
+                  </option>
+                ))
+              })}
+            </select>
+            <icons.chevronDown />
+          </span>
+        </div>
+      )}
       <table className="ja-table" aria-label={label}>
         <thead>
           <tr>
-            {columns.map((column) => (
-              <th key={column.key} scope="col" data-align={column.align === 'end' ? 'end' : undefined}>
-                {column.header || (column.srHeader && <span className="ja-sr">{column.srHeader}</span>)}
-              </th>
-            ))}
+            {columns.map((column) => {
+              const content = column.header || (column.srHeader && <span className="ja-sr">{column.srHeader}</span>)
+              const current = sort?.key === column.key ? sort.direction : undefined
+              return (
+                <th
+                  key={column.key}
+                  scope="col"
+                  data-align={column.align === 'end' ? 'end' : undefined}
+                  aria-sort={current === 'asc' ? 'ascending' : current === 'desc' ? 'descending' : undefined}
+                >
+                  {column.sort && onSortChange ? (
+                    <button
+                      type="button"
+                      className="ja-sort"
+                      data-sorted={current}
+                      onClick={() => onSortChange(nextSort(sort, column.key, column.sort?.first))}
+                    >
+                      {content}
+                      <span className="ja-sort-arrow" aria-hidden="true">
+                        {current === 'desc' ? <icons.chevronDown /> : <icons.chevronDown style={{ rotate: '180deg' }} />}
+                      </span>
+                    </button>
+                  ) : (
+                    content
+                  )}
+                </th>
+              )
+            })}
           </tr>
         </thead>
         <tbody>

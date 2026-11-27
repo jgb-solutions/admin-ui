@@ -40,6 +40,35 @@ test('the users table: filters, search with its empty state, and pages', async (
   await expect(page.getByRole('table', { name: 'Users' })).toBeVisible()
 })
 
+test('the users table sorts from its headers: aria-sort, the arrow, and back the other way', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'desktop: phones sort from a list')
+  await open(page, 'light', '#users')
+  const table = page.getByRole('table', { name: 'Users' })
+  const person = table.getByRole('columnheader', { name: 'Person' })
+  const firstName = table.locator('tbody tr').first().locator('b')
+  await expect(person).not.toHaveAttribute('aria-sort', /./)
+  await person.getByRole('button').click()
+  await expect(person).toHaveAttribute('aria-sort', 'ascending')
+  await expect(firstName).toHaveText('Ada Okafor')
+  await person.getByRole('button').click()
+  await expect(person).toHaveAttribute('aria-sort', 'descending')
+  await expect(firstName).toHaveText('Tomás Ruiz')
+  // From the keyboard too: another column, its first direction.
+  await table.getByRole('columnheader', { name: 'Role' }).getByRole('button').focus()
+  await page.keyboard.press('Enter')
+  await expect(table.getByRole('columnheader', { name: 'Role' })).toHaveAttribute('aria-sort', 'ascending')
+  await expect(person).not.toHaveAttribute('aria-sort', /./)
+  await expect(firstName).toHaveText('Jonas Lind')
+})
+
+test('phone: the users table sorts from a "Sort by" list', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'phones only')
+  await open(page, 'light', '#users')
+  await page.getByLabel('Sort by').selectOption({ label: 'Person, Z to A' })
+  await expect(page.getByRole('table', { name: 'Users' }).locator('tbody tr').first().locator('b')).toHaveText('Tomás Ruiz')
+  await expectFitsScreen(page)
+})
+
 test('phone: tiles stack in two columns and table rows become cards', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'phones only')
   await open(page, 'light')

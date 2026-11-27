@@ -407,8 +407,11 @@
   background: rgb(255 255 255 / 0.06);
 }
 .ja-theme[data-tone='night'] .ja-theme-options button {
-  flex: 1;
-  padding: 0 6px;
+  /* As wide as its name, so "System" keeps its padding in the sidebar's width. */
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 5px;
+  padding: 0 5px;
   color: var(--night-muted);
 }
 .ja-theme[data-tone='night'] .ja-theme-options button:hover {

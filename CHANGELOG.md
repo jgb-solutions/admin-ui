@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- `DataTable` sorting. A column with `sort` gets a header button (the arrow shows the direction; `aria-sort` on the sorted header). The app keeps the sort (`sort`, `onSortChange`), e.g. in the URL's search params. With `sortRows`, the table sorts the rows it's given with the column's `compare` (when the app passes all the rows); without it, the app or the server sorts. On phones, where headers are hidden, a "Sort by" list does the same.
+- `nextSort`, `sortRows`, `byText` (as people read it: case and accents aside, numbers in order), `byNumber` (a missing value counts as the smallest), and the `TableSort`, `SortDirection` and `ColumnSort` types.
+- `ThemeToggle` in the sidebar: each choice is as wide as its name, so "Match system" keeps its padding.
+
 ## 0.1.3
 
 - `ThemeToggle`: three choices, Light, Dark and Match system, as a radio group (arrow keys, Home and End move and pick; the chosen one is the tab stop). Before, it only switched between light and dark, so the system's theme couldn't be picked again. With `tone="night"` (the sidebar) the names show next to the icons; in a collapsed sidebar it's one button that goes to the next choice ("Theme: Light. Switch to Dark").

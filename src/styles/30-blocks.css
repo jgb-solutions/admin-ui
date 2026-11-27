@@ -247,6 +247,46 @@
   text-align: left;
   white-space: nowrap;
 }
+/* Sortable headers: the whole header is a button; the arrow shows the direction (faint until sorted). */
+.ja-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: -4px -6px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.ja-sort:hover,
+.ja-sort[data-sorted] {
+  color: var(--ink);
+}
+.ja-sort-arrow {
+  display: inline-grid;
+  opacity: 0;
+}
+.ja-sort-arrow svg {
+  width: 14px;
+  height: 14px;
+}
+.ja-sort:hover .ja-sort-arrow,
+.ja-sort:focus-visible .ja-sort-arrow {
+  opacity: 0.5;
+}
+.ja-sort[data-sorted] .ja-sort-arrow {
+  opacity: 1;
+}
+th[data-align='end'] .ja-sort {
+  flex-direction: row-reverse;
+}
+/* The phone's "Sort by" list (headers are hidden there). */
+.ja-sort-phone {
+  display: none;
+}
 .ja-table td {
   padding: 10px 12px;
   background: var(--tile-sunk);
@@ -447,6 +487,19 @@
   /* Table rows become cards: two columns, each column placed by its `phone` setting. */
   .ja-table thead {
     display: none;
+  }
+  .ja-sort-phone {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .ja-sort-phone .ja-select-wrap {
+    flex: 1;
+    min-width: 0;
   }
   .ja-table,
   .ja-table tbody {

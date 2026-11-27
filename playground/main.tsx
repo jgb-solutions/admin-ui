@@ -10,6 +10,7 @@ import {
   Bento,
   Button,
   Checkbox,
+  byText,
   DataTable,
   FilterTabs,
   HeroChartTile,
@@ -23,6 +24,7 @@ import {
   PersonCell,
   RolePicker,
   RowAction,
+  sortRows,
   Select,
   StatTile,
   StatusBadge,
@@ -36,6 +38,7 @@ import {
   type Column,
   type NavSection,
   type RenderLink,
+  type TableSort,
 } from '../src'
 import { ACTIVITY, PEOPLE, VISITS, type Person } from './data'
 
@@ -111,24 +114,25 @@ function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
   const [filter, setFilter] = useState<Filter>('all')
   const [query, setQuery] = useState(STATE === 'empty' ? 'zebra' : '')
   const [page, setPage] = useState(1)
-  const rows = useMemo(
+  const [sort, setSort] = useState<TableSort | undefined>(undefined)
+  const filtered = useMemo(
     () =>
       people
         .filter((p) => (filter === 'admins' ? p.role === 'Admin' : filter === 'suspended' ? p.status === 'suspended' : true))
         .filter((p) => !query || `${p.name} ${p.email}`.toLowerCase().includes(query.toLowerCase())),
     [people, filter, query],
   )
-  const pages = Math.max(1, Math.ceil(rows.length / pageSize))
-  const shown = rows.slice((page - 1) * pageSize, page * pageSize)
   const columns: Column<Person>[] = [
     {
       key: 'person',
       header: 'Person',
+      sort: { compare: byText((p) => p.name), ascLabel: 'A to Z', descLabel: 'Z to A' },
       cell: (p) => <PersonCell name={p.name} detail={p.email} avatar={<Avatar name={p.name} shape="soft" />} />,
     },
     {
       key: 'role',
       header: 'Role',
+      sort: { compare: byText((p) => p.role) },
       phone: { order: 3 },
       cell: (p) => (
         <RolePicker
@@ -150,7 +154,12 @@ function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
       cell: (p) => <StatusBadge tone={PEOPLE_STATUS[p.status].tone}>{PEOPLE_STATUS[p.status].label}</StatusBadge>,
       phone: { order: 2, align: 'end' },
     },
-    { key: 'joined', header: 'Joined', cell: (p) => <span className="ja-muted">{p.joined}</span>, phone: { hidden: true } },
+    {
+      key: 'joined',
+      header: 'Joined',
+      cell: (p) => <span className="ja-muted">{p.joined}</span>,
+      phone: { hidden: true },
+    },
     {
       key: 'action',
       header: '',
@@ -180,6 +189,10 @@ function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
         ),
     },
   ]
+  const column = columns.find((c) => c.key === sort?.key)
+  const rows = sort ? sortRows(filtered, column?.sort?.compare, sort.direction) : filtered
+  const pages = Math.max(1, Math.ceil(rows.length / pageSize))
+  const shown = rows.slice((page - 1) * pageSize, page * pageSize)
   return (
     <Tile
       span={span}
@@ -218,6 +231,11 @@ function UsersTile({ span, pageSize }: { span: number; pageSize: number }) {
         rowKey={(p) => p.id}
         flash={flash}
         loading={STATE === 'loading'}
+        sort={sort}
+        onSortChange={(next) => {
+          setSort(next)
+          setPage(1)
+        }}
         empty={
           <>
             No people match “{query}”.{' '}
